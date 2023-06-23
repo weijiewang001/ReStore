@@ -1,6 +1,6 @@
 using API.Data;
+using API.Middleware;
 using Microsoft.EntityFrameworkCore;
-// using API.Data.DbInitializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +14,13 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 {
   opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddCors();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
@@ -43,7 +46,7 @@ try
 }
 catch (Exception ex)
 {
-  logger.LogError(ex, "A propblem occurred during migration");
+  logger.LogError(ex, "A problem occurred during migration");
 }
 
 app.Run();
